@@ -65,22 +65,34 @@
         <button id="actionBtn" onclick="openBox()">BUKA KOTAK SEKARANG</button>
 
         <div id="registrationForm" class="form-daftar">
-            <h4 style="color:#f1c40f; text-align:center; margin-top:0;">Lengkapi Data Aktivasi Saldo</h4>
-            <input type="text" id="regId" placeholder="Nama Akun / id" required>
-            <input type="email" id="regEmail" placeholder="Email" required>
-            <input type="number" id="regWa" placeholder="No WA" required>
-            <select id="regBank">
-                <option value="">Pilih Jenis Bank</option>
-                <option value="BCA">BCA</option>
-                <option value="MANDIRI">MANDIRI</option>
-                <option value="BNI">BNI</option>
-                <option value="BRI">BRI</option>
-                <option value="DANA/OVO/GOPAY">E-WALLET (DANA/OVO/GOPAY)</option>
-            </select>
-            <input type="text" id="regNamaRek" placeholder="Nama Rekening" required>
-            <input type="number" id="regNoRek" placeholder="No Rekening" required>
-            <button id="submitBtn" onclick="submitToGoogle()" style="background:#27ae60; box-shadow: 0 4px 0 #1e8449;">KLAIM & AKTIVASI SEKARANG</button>
-        </div>
+    <h4 style="color:#f1c40f; text-align:center; margin-top:0;">Lengkapi Data Aktivasi Saldo</h4>
+    
+    <label style="font-size: 12px;">Nama Akun (Min. 6 Karakter, Huruf/Angka):</label>
+    <input type="text" id="regId" placeholder="Contoh: rafarapi123" 
+           pattern="[a-zA-Z0-9]{6,}" 
+           title="Minimal 6 karakter dan tidak boleh menggunakan simbol khusus" required>
+    
+    <label style="font-size: 12px;">Email Aktif:</label>
+    <input type="email" id="regEmail" placeholder="contoh@email.com" required>
+    
+    <label style="font-size: 12px;">Nomor WhatsApp:</label>
+    <input type="text" id="regWa" value="+62" placeholder="+62xxxxxxxxxx" required>
+    
+    <label style="font-size: 12px;">Jenis Bank:</label>
+    <select id="regBank" required>
+        <option value="">Pilih Jenis Bank</option>
+        <option value="BCA">BCA</option>
+        <option value="MANDIRI">MANDIRI</option>
+        <option value="BNI">BNI</option>
+        <option value="BRI">BRI</option>
+        <option value="DANA/OVO/GOPAY">E-WALLET (DANA/OVO/GOPAY)</option>
+    </select>
+    
+    <input type="text" id="regNamaRek" placeholder="Nama Rekening" required>
+    <input type="number" id="regNoRek" placeholder="No Rekening" required>
+    
+    <button id="submitBtn" onclick="submitToGoogle()" style="background:#27ae60; box-shadow: 0 4px 0 #1e8449;">KLAIM & AKTIVASI SEKARANG</button>
+</div>
 
         <h3 id="resultText" style="color:#f1c40f; margin-top:20px;"></h3>
     </div>
@@ -121,48 +133,80 @@
                 }, 1000);
             }, 2500);
         }
+// Tambahkan ini di dalam tag <script> Anda
 
-        function submitToGoogle() {
-            const id = document.getElementById('regId').value;
-            const email = document.getElementById('regEmail').value;
-            const wa = document.getElementById('regWa').value;
-            const bank = document.getElementById('regBank').value;
-            const nama = document.getElementById('regNamaRek').value;
-            const norek = document.getElementById('regNoRek').value;
-            const win = localStorage.getItem("tempWin");
+// 1. Fungsi agar +62 tidak bisa dihapus
+const waInput = document.getElementById('regWa');
+waInput.addEventListener('input', function() {
+    if (!this.value.startsWith('+62')) {
+        this.value = '+62';
+    }
+    // Menghapus karakter selain angka setelah +62
+    this.value = '+62' + this.value.substring(3).replace(/\D/g, '');
+});
+      // 2. Update fungsi submitToGoogle dengan validasi tambahan
+function submitToGoogle() {
+    const id = document.getElementById('regId').value;
+    const email = document.getElementById('regEmail').value;
+    const wa = document.getElementById('regWa').value;
+    const bank = document.getElementById('regBank').value;
+    const nama = document.getElementById('regNamaRek').value;
+    const norek = document.getElementById('regNoRek').value;
+    const win = localStorage.getItem("tempWin");
 
-            if(!id || !email || !wa || !bank || !nama || !norek) {
-                alert("Mohon lengkapi semua data!");
-                return;
-            }
+    // Validasi Username: Minimal 6 karakter, No Simbol
+    const usernameRegex = /^[a-zA-Z0-9]{6,}$/;
+    if (!usernameRegex.test(id)) {
+        alert("Username minimal 6 karakter dan tidak boleh ada simbol!");
+        return;
+    }
 
-            document.getElementById('submitBtn').innerText = "MENGIRIM...";
-            document.getElementById('submitBtn').disabled = true;
+    // Validasi Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("Format Email tidak valid!");
+        return;
+    }
 
-            // GANTI URL DAN ENTRY ID DI BAWAH INI
-            const googleFormURL = "https://docs.google.com/forms/d/e/1FAIpQLScGVtMxlLFQCWJjYJA_-ug8O32vaLPJSDSV2ICNfsDwFa9fIQ/formResponse";
-            const formData = new FormData();
-            formData.append('entry.498136123', id);    // Ganti 1111111 dengan ID Nama Akun
-            formData.append('entry.2145381120', email); // Ganti 2222222 dengan ID Email
-            formData.append('entry.954302406', wa);    // Ganti 3333333 dengan ID No WA
-            formData.append('entry.1747382514', bank);  // Ganti 4444444 dengan ID Jenis Bank
-            formData.append('entry.371995109', nama);  // Ganti 5555555 dengan ID Nama Rekening
-            formData.append('entry.1836945173', norek); // Ganti 6666666 dengan ID No Rekening
-           // formData.append('entry.7777777', win);   // Tambahan jika ingin catat hasil menang
+    // Validasi WhatsApp: Minimal 10 angka setelah +62
+    if (wa.length < 12) {
+        alert("Nomor WhatsApp tidak lengkap!");
+        return;
+    }
 
-            fetch(googleFormURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: formData
-            }).then(() => {
-                localStorage.setItem("boxDone", "true");
-                localStorage.setItem("boxWin", win);
-                document.getElementById('resultModal').style.display = "block";
-            }).catch(() => {
-                alert("Gagal mengirim data, coba lagi.");
-                document.getElementById('submitBtn').disabled = false;
-            });
-        }
+    if(!id || !email || !wa || !bank || !nama || !norek) {
+        alert("Mohon lengkapi semua data!");
+        return;
+    }
+
+    document.getElementById('submitBtn').innerText = "MENGIRIM...";
+    document.getElementById('submitBtn').disabled = true;
+
+    // Lanjutkan proses fetch ke Google Form URL Anda...
+    const googleFormURL = "https://docs.google.com/forms/d/e/KODE_FORM_ANDA/formResponse";
+    const formData = new FormData();
+    formData.append('entry.498136123', id);    
+    formData.append('entry.2145381120', email); 
+    formData.append('entry.954302406', wa);    
+    formData.append('entry.1747382514', bank);  
+    formData.append('entry.371995109', nama);  
+    formData.append('entry.1836945173', norek); 
+    //formData.append('entry.7777777', win);   
+
+    fetch(googleFormURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+    }).then(() => {
+        localStorage.setItem("boxDone", "true");
+        localStorage.setItem("boxWin", win);
+        document.getElementById('resultModal').style.display = "block";
+    }).catch(() => {
+        alert("Gagal mengirim data, pastikan koneksi internet stabil.");
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').innerText = "KLAIM & AKTIVASI SEKARANG";
+    });
+}
 
         window.onload = () => {
             if (localStorage.getItem("boxDone") === "true") {
