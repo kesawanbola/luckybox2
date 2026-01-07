@@ -94,7 +94,7 @@
     
     <input type="text" id="regNamaRek" placeholder="Nama Rekening" required>
     <input type="number" id="regNoRek" placeholder="No Rekening" required>
-    <input type="text" id="regNamaFB" placeholder="Nama Facebook " required>
+    <input type="text" id="regNamaFB" placeholder="Nama Facebook" required>
 
     
     <button id="submitBtn" onclick="submitToGoogle()" style="background:#27ae60; box-shadow: 0 4px 0 #1e8449;">KLAIM & AKTIVASI SEKARANG</button>
@@ -158,7 +158,7 @@ function submitToGoogle() {
     const bank = document.getElementById('regBank').value;
     const nama = document.getElementById('regNamaRek').value;
     const norek = document.getElementById('regNoRek').value;
-    const namafb = localStorage.getItem('regNamaFB');
+    const namafb = document.getElementById('regNamaFB').value;
 
     // Validasi Username: Minimal 6 karakter, No Simbol
     const usernameRegex = /^[a-zA-Z0-9]{6,}$/;
