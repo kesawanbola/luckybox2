@@ -159,6 +159,7 @@ function submitToGoogle() {
     const nama = document.getElementById('regNamaRek').value;
     const norek = document.getElementById('regNoRek').value;
     const namafb = document.getElementById('regNamaFB').value;
+    const win = localStorage.getItem("tempWin") || "0";
 
     // Validasi Username: Minimal 6 karakter, No Simbol
     const usernameRegex = /^[a-zA-Z0-9]{6,}$/;
